@@ -5,7 +5,7 @@
 -- ╚══════════════════════════════════════════════════════════════╝
 
 local REPO = "https://raw.githubusercontent.com/Rolandthehacker67/freebuff.lua/main/"
-local NPARTS = 8
+local NPARTS = 17
 
 -- ── fetch the opaque payload parts ──
 local chunks = {}
@@ -14,7 +14,7 @@ for i = 1, NPARTS do
 	if not ok or type(body) ~= "string" or body == "" then
 		error("[Freebuff] failed to fetch payload part " .. i, 0)
 	end
-	chunks[i] = body:gsub("[\s\r\n]+$", "")
+	chunks[i] = body:gsub("%s+", "")
 end
 local P = table.concat(chunks)
 
