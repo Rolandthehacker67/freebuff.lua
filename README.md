@@ -56,6 +56,7 @@ Same device-code flow the real CLI uses (all endpoints verified live):
 # 💚 Freebuff **Client** — the new build (also in this repo)
 
 Full rebuild: login website + backend (device-link, no passwords in Roblox), real account/usage display, model states, empty-new-file fix.
+**2026-10-14 hotfix:** the GUI failed on Delta with `AutoButtonColor is not a valid member of TextLabel` — the header logo carried a button-only property. Fixed by removing it and by making the `inst()` property setter pcall-guarded, so any executor-specific class-property delta is skipped with a warning instead of killing init.
 
 ## ✦ Install (one paste)
 
@@ -75,14 +76,14 @@ Right-Ctrl toggles · `/` opens the command palette.
 
 ```
 ├── FreebuffClient-Loader.luau   # 1 KB bootstrap → fetches the byte-verified protected build (from the build host, with a loader fallback)
-├── FreebuffClient-Protected.luau   # available on the build host: single-file b64+xor payload (145,436 bytes)
+├── FreebuffClient-Protected.luau   # available on the build host: single-file b64+xor payload (145,875 bytes; fix v3: class-guarded inst())
 ├── Freebuff-Client.luau         # full readable source (served at the build host)
 ├── freebuff-website/            # link-code website (index.html, style.css, app.js)
 ├── freebuff-backend/            # Cloudflare Worker API (links: /api/link/*, auth, proxies)
 └── docs/API-CONTRACT.md         # shared endpoint contract
 ```
 
-- **Verify:** bootstrap → protected build → b64 decode → XOR keystream (`FreebuffExecutor2026`) → loadstring; the decoded output is byte-identical to `Freebuff-Client.luau` (103,337 bytes; sha256 `461ba8e9a5715e3f…`). Single-file protected build sha256 `8fa87cdda45e7200…`. Boot-checked end-to-end in the official `luau` runtime (loader → decode → `[FreebuffClient] loaded`).
+- **Verify:** bootstrap → protected build → b64 decode → XOR keystream (`FreebuffExecutor2026`) → loadstring; the decoded output is byte-identical to `Freebuff-Client.luau` (103,654 bytes; sha256 `22a70289e8d3d7df…`). Single-file protected build sha256 `72825c098bc387aa…`. Boot-checked end-to-end in the official `luau` runtime (loader → decode → `[FreebuffClient] loaded`).
 - Live mirrors on the build host `https://site-e068e78f0bf349a38e471e7ec5d6646a.freebuff.page/`: loader bootstrap, 12-part chunked loader (`parts-client/p1..p12.lua`), single-file protected build, readable source — all byte-identical.
 
 - Website + API live at https://site-c6f79b10eafc4ab39f22ee80154776ff.freebuff.page (D1-backed).
