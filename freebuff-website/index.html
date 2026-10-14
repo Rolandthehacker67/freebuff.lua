@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Freebuff — Link your Roblox script</title>
+<meta name="description" content="Link your Roblox Freebuff script to your Freebuff account. Device-link flow, no passwords inside Roblox.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237c5cff'/><text x='16' y='23' font-size='18' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>F</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg-aurora" aria-hidden="true"></div>
+
+<header class="site-header">
+	<a class="brand" href="#/" aria-label="Freebuff home">
+		<span class="brand-mark" aria-hidden="true">F</span>
+		<span>Freebuff</span>
+	</a>
+	<nav aria-label="Main navigation">
+		<a href="#/" data-nav="home">Home</a>
+		<a href="#/link" data-nav="link">Link script</a>
+		<a href="#/account" data-nav="account">Account</a>
+		<a href="#/help" data-nav="help">Help</a>
+	</nav>
+</header>
+
+<main id="app" tabindex="-1">
+	<!-- ══════════ LANDING ══════════ -->
+	<section id="page-home" class="page" hidden>
+		<div class="hero glass">
+			<h1>Your Roblox AI assistant,<br><span class="gradtext">connected for real.</span></h1>
+			<p class="lead">
+				The Freebuff script runs inside your executor and talks to <strong>this website</strong> for
+				login and account data — through a one-time link code. Your Freebuff password never
+				touches Roblox.
+			</p>
+			<div class="hero-actions">
+				<a class="btn primary" href="#/link">Link your script</a>
+				<a class="btn ghost" href="#/help">How it works</a>
+			</div>
+			<ol class="steps" aria-label="Three steps">
+				<li><span class="step-num">1</span> In Roblox, the script shows an 8-character code.</li>
+				<li><span class="step-num">2</span> Enter that code here to confirm the link.</li>
+				<li><span class="step-num">3</span> The script logs in automatically and shows your real usage.</li>
+			</ol>
+		</div>
+		<div class="cards">
+			<article class="glass card">
+				<h2>No passwords in Roblox</h2>
+				<p>The script only ever holds a revocable session token from this backend. Unlink anytime from the Account page.</p>
+			</article>
+			<article class="glass card">
+				<h2>Real usage only</h2>
+				<p>Usage, plans and models come straight from the Freebuff endpoints the backend is configured with. If something is not confirmed yet, you see “Unavailable” — never fake numbers.</p>
+			</article>
+			<article class="glass card">
+				<h2>Rate limited &amp; safe</h2>
+				<p>Link codes expire after 5 minutes and work once. Sessions are hashed and revocable. CORS is locked to this site.</p>
+			</article>
+		</div>
+	</section>
+
+	<!-- ══════════ LINK / CONFIRM CODE ══════════ -->
+	<section id="page-link" class="page" hidden>
+		<div class="glass panel narrow">
+			<h1>Link your Roblox script</h1>
+			<p class="sub">Open the Freebuff script in your executor, tap <strong>Link device</strong>, then type the 8-character code it shows.</p>
+			<form id="link-form" novalidate>
+				<label for="code">Link code</label>
+				<input id="code" name="code" inputmode="latin characters" autocomplete="one-time-code"
+					spellcheck="false" maxlength="8" placeholder="XXXXXXXX" aria-describedby="code-help">
+				<p id="code-help" class="hint">8 characters, uppercase automatically. Codes expire after 5 minutes.</p>
+				<label for="device-name">Device name <span class="muted">(optional)</span></label>
+				<input id="device-name" name="deviceName" maxlength="64" placeholder="My gaming PC" autocomplete="off">
+				<button class="btn primary" type="submit" id="link-submit">Confirm link</button>
+				<p id="link-status" class="status" role="status" aria-live="polite"></p>
+			</form>
+			<div id="link-success" hidden>
+				<div class="big-ok" aria-hidden="true">✓</div>
+				<h2>Linked!</h2>
+				<p>Go back to Roblox — the script turns <strong>Connected</strong> within a second or two and starts showing your real account data.</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- ══════════ LOGIN ══════════ -->
+	<section id="page-login" class="page" hidden>
+		<div class="glass panel narrow">
+			<h1>Log in</h1>
+			<p class="sub">There is only one supported login: the <strong>device link</strong> from your Roblox script. No Freebuff password is ever entered here or in Roblox.</p>
+			<button class="btn primary wide" id="freebuff-login-btn" disabled
+				aria-describedby="fb-login-note">Continue with Freebuff</button>
+			<p id="fb-login-note" class="hint" role="note">
+				Disabled until the backend’s <code>FREEBUFF.freebuffLoginUrl</code> is confirmed — buttons that go nowhere are not shipped.
+			</p>
+			<hr>
+			<p>Already have a code on screen in Roblox?</p>
+			<a class="btn ghost wide" href="#/link">Enter the link code</a>
+		</div>
+	</section>
+
+	<!-- ══════════ ACCOUNT DASHBOARD ══════════ -->
+	<section id="page-account" class="page" hidden>
+		<div class="glass panel">
+			<h1>Account dashboard</h1>
+			<p class="sub">This page shows your <strong>real</strong> data or an honest “Unavailable” state — nothing invented.</p>
+			<div class="token-row">
+				<label for="session-token">Session token <span class="muted">(from <code>LunaAI/session.json</code> in your executor)</span></label>
+				<input id="session-token" type="password" autocomplete="off" spellcheck="false" placeholder="paste token">
+				<button class="btn primary" id="load-account">Load account</button>
+				<button class="btn ghost" id="forget-token">Forget</button>
+			</div>
+			<div id="account-body" hidden>
+				<div class="dash-grid">
+					<div class="dash-cell glass">
+						<h2>Account</h2>
+						<div class="avatar" id="acc-avatar" aria-hidden="true">?</div>
+						<dl>
+							<dt>Name</dt><dd id="acc-name">—</dd>
+							<dt>Plan</dt><dd id="acc-plan">—</dd>
+						</dl>
+					</div>
+					<div class="dash-cell glass">
+						<h2>Usage</h2>						<div class="usage-bar" role="progressbar" aria-label="Allowance used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+							<div class="usage-fill" id="usage-fill"></div>
+						</div>
+
+				</div>
+					<dl>
+						<dt id="usage-label">Usage</dt><dd id="usage-value">—</dd>
+						<dt>Resets</dt><dd id="usage-reset">—</dd>
+					</dl>
+				</div>
+				<div class="dash-cell glass">
+					<h2>Linked devices</h2>
+					<ul class="devices" id="devices-list"></ul>
+				</div>
+			</div>
+			<p id="account-status" class="status" role="status" aria-live="polite"></p>
+		</div>
+	</section>
+
+	<!-- ══════════ HELP / FAQ ══════════ -->
+	<section id="page-help" class="page" hidden>
+		<div class="glass panel">
+			<h1>Help &amp; FAQ</h1>
+			<details open>
+				<summary>Where does the script get its login from?</summary>
+				<p>From this backend. The script asks for a one-time code, you confirm it here, and the script receives a session token <em>hash-stored</em> on the server. The token is revocable and expires.</p>
+			</details>
+			<details>
+				<summary>My code says “expired”</summary>
+				<p>Codes live for 5 minutes and work once. Tap <strong>Link device</strong> in the script again for a fresh code.</p>
+			</details>
+			<details>
+				<summary>Why does something say “Unavailable”?</summary>
+				<p>Account, usage and models come from Freebuff endpoints that must be configured and confirmed in the backend’s <code>config.js</code>. While a route is empty or unreachable, the UI shows “Unavailable” instead of inventing numbers.</p>
+			</details>
+			<details>
+				<summary>Is my Freebuff password stored anywhere?</summary>
+				<p>No. It is never typed into Roblox and never stored in this system.</p>
+			</details>
+			<details>
+				<summary>How do I unlink a device?</summary>
+				<p>Account page → Linked devices → Revoke. The script falls back to the login screen on its next launch.</p>
+			</details>
+			<details>
+				<summary>Keyboard shortcuts</summary>
+				<p>Code field: paste works, uppercase is automatic. Everything is reachable with Tab/Enter; focus styles are visible.</p>
+			</details>
+		</div>
+	</section>
+</main>
+
+<footer class="site-footer">
+	<small>Freebuff client · no fake data, no password storage · device-link sessions are revocable</small>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
