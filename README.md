@@ -50,3 +50,40 @@ Same device-code flow the real CLI uses (all endpoints verified live):
 - **Compile:** PASS with the official `luau` compiler (`--!nocheck` header on the loader).
 - **AI endpoint:** live-tested keyless (`text.pollinations.ai`, HTTP 200).
 - Remaining limitation: no Roblox client in this VM — in-game runtime (instance rendering, executor HTTP shim detection) still needs a paste-and-run in your executor.
+
+---
+
+# 💚 Freebuff **Client** — the new build (also in this repo)
+
+Full rebuild: login website + backend (device-link, no passwords in Roblox), real account/usage display, model states, empty-new-file fix.
+
+## ✦ Install (one paste)
+
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Rolandthehacker67/freebuff.lua/main/FreebuffClient-Loader.luau"))()
+```
+
+Or the single-file protected build direct from the build host:
+
+```lua
+loadstring(game:HttpGet("https://site-e068e78f0bf349a38e471e7ec5d6646a.freebuff.page/FreebuffClient-Protected.luau"))()
+```
+
+Right-Ctrl toggles · `/` opens the command palette.
+
+## ✦ Layout & notes
+
+```
+├── FreebuffClient-Loader.luau   # 1 KB bootstrap → fetches the byte-verified protected build (from the build host, with a loader fallback)
+├── FreebuffClient-Protected.luau   # available on the build host: single-file b64+xor payload (145,436 bytes)
+├── Freebuff-Client.luau         # full readable source (served at the build host)
+├── freebuff-website/            # link-code website (index.html, style.css, app.js)
+├── freebuff-backend/            # Cloudflare Worker API (links: /api/link/*, auth, proxies)
+└── docs/API-CONTRACT.md         # shared endpoint contract
+```
+
+- **Verify:** bootstrap → protected build → b64 decode → XOR keystream (`FreebuffExecutor2026`) → loadstring; the decoded output is byte-identical to `Freebuff-Client.luau` (103,337 bytes; sha256 `461ba8e9a5715e3f…`). Single-file protected build sha256 `8fa87cdda45e7200…`. Boot-checked end-to-end in the official `luau` runtime (loader → decode → `[FreebuffClient] loaded`).
+- Live mirrors on the build host `https://site-e068e78f0bf349a38e471e7ec5d6646a.freebuff.page/`: loader bootstrap, 12-part chunked loader (`parts-client/p1..p12.lua`), single-file protected build, readable source — all byte-identical.
+
+- Website + API live at https://site-c6f79b10eafc4ab39f22ee80154776ff.freebuff.page (D1-backed).
+- Freebuff upstream endpoints stay **unconfirmed** in config until verified — unconfigured routes answer honestly with `unavailable`, no fake data.
