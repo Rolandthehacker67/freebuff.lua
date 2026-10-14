@@ -33,13 +33,14 @@ Complete GUI rewrite — opaque, auto-scaled, simple rail+sidebar layout:
 
 | Artifact | Bytes | sha256 |
 |----------|-------|--------|
-| `Freebuff-Client.luau` (source) | 87,001 | `c137dc34080466f0…` |
-| `FreebuffClient-Protected.luau` (build host) | 122,746 | `30aa5f6155b580f9…` |
+| `Freebuff-Client.luau` (source) | 88,589 | `80de5a4c530806e8…` |
+| `FreebuffClient-Protected.luau` (build host) | 124,952 | `097eb1fbf404d6d6…` |
 | `FreebuffClient-Loader.luau` (GitHub) | 1,145 | `0d50c264bb406c3e…` |
 
 - **Compile:** loader + source + protected build all compile clean under the official Luau compiler.
 - **Published chain E2E:** GitHub loader bytes → build-host payload (fetched live, byte-match) → decode → `[FreebuffClient] loaded — F2 toggles · / opens the command palette`, exit 0.
-- **Mock-executor driver:** ScreenGui builds; all 6 pages (Chat/Files/Models/Account/Settings/Login) exist; Chat visible on boot; composer + send button present; sending without a token is an honest warning; all rail buttons switch pages and correctly hide the composer outside Chat; login Start-link runs honestly — 22/22 assertions pass.
+- **Mock-executor driver:** ScreenGui builds; all 6 pages (Chat/Files/Models/Account/Settings/Login) exist; Chat visible on boot; composer + send button present; sending without a token is an honest warning; all rail buttons switch pages and correctly hide the composer outside Chat; login Start-link runs honestly; **theme switching runs the full re-resolve registry without any nil-property crash; settings persist via `LunaAI/settings.json`** — 25/25 assertions pass.
+- **2026-10-14b crash fix:** Delta's `Unable to assign property TextColor3. Color3 expected, got nil` — fixed at the root: `"text"` now aliases to `textMain`, every themed assignment is nil-safe, `applyThemeAll` was actually implemented (it was called but never defined), and settings saving (`ST.save`/`ST.load`) exists instead of erroring on a nil method.
 
 ## ✦ Keybinds
 
