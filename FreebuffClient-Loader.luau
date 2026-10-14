@@ -1,8 +1,9 @@
 --!nocheck
--- FREEBUFF CLIENT — v3 bootstrap loader (1 KB)
+-- FREEBUFF COMBINED — v3 bootstrap loader (1 KB)
 -- Paste:  loadstring(game:HttpGet("https://raw.githubusercontent.com/Rolandthehacker67/freebuff.lua/main/FreebuffClient-Loader.luau"))()
 -- This file only points to the byte-verified protected build; the b64+xor
 -- payload lives on the build host (always current) — no code ships here.
+-- Loadstring serves BOTH apps: v1 Desktop (Right-Ctrl) + v2 Client (F2).
 
 local BUILD_HOST = "https://site-e068e78f0bf349a38e471e7ec5d6646a.freebuff.page/FreebuffClient-Protected.luau"
 local FALLBACK = "https://site-e068e78f0bf349a38e471e7ec5d6646a.freebuff.page/FreebuffClient-Loader-Host.luau"
