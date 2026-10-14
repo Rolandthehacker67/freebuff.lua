@@ -1,0 +1,9 @@
+name = "freebuff-client-backend"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+# Create the database first: `npm run db:create`, then paste its database_id here.
+[[d1_databases]]
+binding = "DB"
+database_name = "freebuff-links"
+database_id = "00000000-0000-0000-0000-000000000000"

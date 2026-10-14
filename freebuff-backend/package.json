@@ -1,0 +1,16 @@
+{
+  "name": "freebuff-client-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Backend for the Freebuff Roblox client: device-link auth, session tokens, honest Freebuff proxies, rate limiting.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create freebuff-links",
+    "db:schema": "wrangler d1 execute freebuff-links --remote --file=./schema.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
