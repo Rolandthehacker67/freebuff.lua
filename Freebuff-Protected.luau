@@ -6,8 +6,8 @@
 -- ║  the heavy payload lives on the build host (always current).   ║
 -- ╚══════════════════════════════════════════════════════════════╝
 
-local BUILD_HOST = "https://site-dbbe38d477a74a07a83c8e6c37736ead.freebuff.page/Freebuff-Protected.luau"
-local FALLBACK_RAW = "https://site-dbbe38d477a74a07a83c8e6c37736ead.freebuff.page/Freebuff-AllInOne.luau"
+local BUILD_HOST = "https://site-e068e78f0bf349a38e471e7ec5d6646a.freebuff.page/Freebuff-Protected.luau"
+local FALLBACK_RAW = "https://site-e068e78f0bf349a38e471e7ec5d6646a.freebuff.page/Freebuff-AllInOne.luau"
 
 local function fetch(url)
 	local ok, body = pcall(function() return game:HttpGet(url) end)
