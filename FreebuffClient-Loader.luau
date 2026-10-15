@@ -1,31 +1,62 @@
 --!nocheck
--- FREEBUFF CLIENT — v3 bootstrap loader (1 KB, client-only payload)
+-- ╕ FREEBUFF CLIENT — v2 loader (chunked b64+xor payload from the repo parts) ╕
 -- Paste:  loadstring(game:HttpGet("https://raw.githubusercontent.com/Rolandthehacker67/freebuff.lua/main/FreebuffClient-Loader.luau"))()
--- This file only points to the byte-verified protected build; the b64+xor
--- payload lives on the build host (always current) — no code ships here.
--- The v1 desktop was removed from the payload — this serves ONE client window.
 
-local BUILD_HOST = "https://site-e068e78f0bf349a38e471e7ec5d6646a.freebuff.page/FreebuffClient-Protected.luau"
-local FALLBACK = "https://site-e068e78f0bf349a38e471e7ec5d6646a.freebuff.page/FreebuffClient-Loader-Host.luau"
+local REPO = "https://raw.githubusercontent.com/Rolandthehacker67/freebuff.lua/main/"
+local NPARTS = 12
 
-local function fetch(url)
-	local ok, body = pcall(function() return game:HttpGet(url) end)
-	if ok and type(body) == "string" and #body > 0 then
-		return body
+local chunks = {}
+for i = 1, NPARTS do
+	local ok, body = pcall(function() return game:HttpGet(REPO .. "parts-client/p" .. i .. ".lua") end)
+	if not ok or type(body) ~= "string" or body == "" then
+		error("[Freebuff] failed to fetch payload part " .. i, 0)
 	end
-	return nil
+	chunks[i] = body:gsub("%s+", "")
+end
+local P = table.concat(chunks)
+
+local KEY = "FreebuffExecutor2026"
+local B64CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+local LOOKUP = {}
+for i = 1, #B64CHARS do
+	LOOKUP[string.byte(B64CHARS, i)] = i - 1
 end
 
-local src = fetch(BUILD_HOST)
-if not src then
-	src = fetch(FALLBACK)
-end
-if not src then
-	error("[Freebuff] could not fetch the protected build", 0)
+local function decodePayload(p)
+	local rawParts = {}
+	local j = 0
+	for i = 1, #p, 4 do
+		local ch1, ch2, ch3, ch4 = string.byte(p, i, i + 3)
+		local a = LOOKUP[ch1] or 0
+		local b = LOOKUP[ch2] or 0
+		local c = LOOKUP[ch3] or 0
+		local d = LOOKUP[ch4] or 0
+		local v = a * 262144 + b * 4096 + c * 64 + d
+		local hasC = ch3 ~= 61
+		local hasD = ch4 ~= 61
+		j += 1 rawParts[j] = string.char(math.floor(v / 65536) % 256)
+		if hasC then
+			j += 1 rawParts[j] = string.char(math.floor(v / 256) % 256)
+		end
+		if hasD then
+			j += 1 rawParts[j] = string.char(v % 256)
+		end
+	end
+	local raw = table.concat(rawParts)
+	local mn = #KEY
+	local out = {}
+	for i = 1, #raw do
+		out[i] = string.char(bit32.bxor(string.byte(raw, i), string.byte(KEY, (i - 1) % mn + 1)))
+	end
+	return table.concat(out)
 end
 
-local f, err = loadstring(src)
+local ok, boot = pcall(decodePayload, P)
+if not ok then
+	error("[Freebuff] payload decode failed: " .. tostring(boot), 0)
+end
+local f, err = loadstring(boot)
 if not f then
-	error("[Freebuff] protected build failed to load: " .. tostring(err), 0)
+	error("[Freebuff] protected payload failed to load: " .. tostring(err), 0)
 end
 return f()
