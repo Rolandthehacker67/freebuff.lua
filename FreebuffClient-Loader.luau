@@ -1,13 +1,14 @@
 --!nocheck
 -- ╕ FREEBUFF CLIENT — v2 loader (chunked b64+xor payload from the repo parts) ╕
 -- Paste:  loadstring(game:HttpGet("https://raw.githubusercontent.com/Rolandthehacker67/freebuff.lua/main/FreebuffClient-Loader.luau"))()
+-- (loader pulls the 12 payload parts from a reliable single host, not from this repo)
 
-local REPO = "https://raw.githubusercontent.com/Rolandthehacker67/freebuff.lua/main/"
+local REPO = "https://site-c6f79b10eafc4ab39f22ee80154776ff.freebuff.page/parts-client/p"
 local NPARTS = 12
 
 local chunks = {}
 for i = 1, NPARTS do
-	local ok, body = pcall(function() return game:HttpGet(REPO .. "parts-client/p" .. i .. ".lua") end)
+	local ok, body = pcall(function() return game:HttpGet(REPO .. i .. ".lua") end)
 	if not ok or type(body) ~= "string" or body == "" then
 		error("[Freebuff] failed to fetch payload part " .. i, 0)
 	end
